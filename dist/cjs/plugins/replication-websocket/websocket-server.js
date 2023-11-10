@@ -41,7 +41,10 @@ function startSocketServer(options) {
     });
   }
   var onConnection$ = new _rxjs.Subject();
-  wss.on('connection', ws => onConnection$.next(ws));
+  wss.on('connection', (ws, req) => onConnection$.next({
+    ws,
+    req
+  }));
   return {
     server: wss,
     close: closeServer,
@@ -68,14 +71,18 @@ function startWebsocketServer(options) {
     });
     return handler;
   }
-  serverState.onConnection$.subscribe(ws => {
+  serverState.onConnection$.subscribe(socket => {
+    var {
+      ws,
+      req
+    } = socket;
     var onCloseHandlers = [];
     ws.onclose = () => {
       onCloseHandlers.map(fn => fn());
     };
     ws.on('message', async messageString => {
       var message = JSON.parse(messageString);
-      if (options.collectionRules && !options.collectionRules(ws, message.collection)) {
+      if (options.collectionRules && !options.collectionRules(req, message.collection)) {
         // access denial
         return;
       }

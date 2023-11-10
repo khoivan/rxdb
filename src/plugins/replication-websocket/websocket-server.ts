@@ -50,7 +50,7 @@ export function startSocketServer(options: ServerOptions): WebsocketServerState 
     }
 
     const onConnection$ = new Subject<WebSocket>();
-    wss.on('connection', (ws: any) => onConnection$.next(ws));
+    wss.on('connection', (ws: any, req: any) => onConnection$.next({ws, req} as any));
 
     return {
         server: wss,
@@ -87,14 +87,15 @@ export function startWebsocketServer(options: WebsocketServerOptions): Websocket
         return handler;
     }
 
-    serverState.onConnection$.subscribe(ws => {
+    serverState.onConnection$.subscribe(socket => {
+        const {ws, req} = socket;
         const onCloseHandlers: Function[] = [];
         ws.onclose = () => {
             onCloseHandlers.map(fn => fn());
         };
         ws.on('message', async (messageString: string) => {
             const message: WebsocketMessageType = JSON.parse(messageString);
-            if(options.collectionRules && !options.collectionRules(ws, message.collection)){
+            if(options.collectionRules && !options.collectionRules(req, message.collection)){
                 // access denial
                 return;
             }

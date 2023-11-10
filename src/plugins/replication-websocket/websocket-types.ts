@@ -16,13 +16,13 @@ import type {
 
 export type WebsocketServerOptions = {
     database: RxDatabase<any, any, any>;
-    collectionRules?: (ws: WebSocket, collectionName: string) => boolean;
+    collectionRules?: (ws: Request, collectionName: string) => boolean;
 } & ServerOptions;
 
 export type WebsocketServerState = {
     server: WebSocketServer;
     close: () => Promise<void>;
-    onConnection$: Observable<WebSocket>;
+    onConnection$: Observable<any>;
 };
 
 export type WebsocketClientOptions<RxDocType> = {
