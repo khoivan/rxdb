@@ -95,7 +95,7 @@ export function startWebsocketServer(options: WebsocketServerOptions): Websocket
         };
         ws.on('message', async (messageString: string) => {
             const message: WebsocketMessageType = JSON.parse(messageString);
-            if(options.collectionRules && !options.collectionRules(req, message.collection)){
+            if(options.collectionRules && !(await options.collectionRules(req, message.collection))){
                 // access denial
                 return;
             }
