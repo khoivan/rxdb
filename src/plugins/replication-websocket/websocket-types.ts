@@ -16,6 +16,7 @@ import type {
 
 export type WebsocketServerOptions = {
     database: RxDatabase<any, any, any>;
+    collectionRules?: (ws: WebSocket, collectionName: string) => boolean;
 } & ServerOptions;
 
 export type WebsocketServerState = {

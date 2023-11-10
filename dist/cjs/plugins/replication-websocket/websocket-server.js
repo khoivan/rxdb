@@ -75,6 +75,16 @@ function startWebsocketServer(options) {
     };
     ws.on('message', async messageString => {
       var message = JSON.parse(messageString);
+      if (options.collectionRules && !options.collectionRules(ws, message.collection)) {
+        // access denial
+        var _response = {
+          id: message.id,
+          collection: message.collection,
+          result: []
+        };
+        ws.send(JSON.stringify(_response));
+        return;
+      }
       var handler = getReplicationHandler(message.collection);
       var method = handler[message.method];
 

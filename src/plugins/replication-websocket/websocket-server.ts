@@ -94,6 +94,16 @@ export function startWebsocketServer(options: WebsocketServerOptions): Websocket
         };
         ws.on('message', async (messageString: string) => {
             const message: WebsocketMessageType = JSON.parse(messageString);
+            if(options.collectionRules && !options.collectionRules(ws, message.collection)){
+                // access denial
+                const response: WebsocketMessageResponseType = {
+                    id: message.id,
+                    collection: message.collection,
+                    result: []
+                };
+                ws.send(JSON.stringify(response));
+                return;
+            }
             const handler = getReplicationHandler(message.collection);
             const method = handler[message.method];
 

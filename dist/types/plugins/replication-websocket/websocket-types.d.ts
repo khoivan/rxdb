@@ -3,6 +3,7 @@ import type { ServerOptions, ClientOptions, WebSocketServer, WebSocket } from 'w
 import type { RxCollection, RxDatabase, RxReplicationHandler, StringKeys } from '../../types/index.d.ts';
 export type WebsocketServerOptions = {
     database: RxDatabase<any, any, any>;
+    collectionRules?: (ws: WebSocket, collectionName: string) => boolean;
 } & ServerOptions;
 export type WebsocketServerState = {
     server: WebSocketServer;
